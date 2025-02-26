@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crud/auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyProducts extends StatefulWidget {
   const MyProducts({super.key});
@@ -9,6 +12,17 @@ class MyProducts extends StatefulWidget {
 }
 
 class _MyProductsState extends State<MyProducts> {
+String userEmial = "";
+
+getUserDetails()async{
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+setState(() {
+  userEmial = prefs.getString("email")!;
+  print(userEmial);
+});
+}
+
   CollectionReference products =
       FirebaseFirestore.instance.collection("products");
   _deleteProduct(String productId) async {
@@ -90,15 +104,34 @@ class _MyProductsState extends State<MyProducts> {
   }
 
   @override
+initState(){
+  getUserDetails();
+    print(userEmial);
+
+}
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Products"),
         actions: [
+        userEmial !=null ? Text(userEmial): Text("no"),
           IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
                 Navigator.pushNamed(context, "/add");
+              }),
+              IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () async{
+                await FirebaseAuth.instance.signOut();
+                  final SharedPreferences prefs = await SharedPreferences.getInstance();
+prefs.setBool("isLoggedIn", false);
+prefs.remove("email");
+
+
+
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login()));
               })
         ],
       ),
@@ -136,14 +169,14 @@ class _MyProductsState extends State<MyProducts> {
                                       product['description'],
                                       product['image']);
                                 },
-                                icon: Icon(Icons.edit),
+                                icon: Icon(Icons.edit,color: const Color.fromARGB(255, 81, 150, 224),),
                               ),
                               IconButton(
                                   onPressed: () {
                                     _deleteProduct(
                                         snapshot.data!.docs[index].id);
                                   },
-                                  icon: Icon(Icons.delete)),
+                                  icon: Icon(Icons.delete,color: const Color.fromARGB(255, 225, 74, 71),)),
                             ],
                           ));
                     });
