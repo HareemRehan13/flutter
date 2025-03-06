@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crud/auth.dart';
@@ -13,12 +15,14 @@ class MyProducts extends StatefulWidget {
 
 class _MyProductsState extends State<MyProducts> {
 String userEmial = "";
-
+String userName = "";
 getUserDetails()async{
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
 setState(() {
   userEmial = prefs.getString("email")!;
+  
+    userName= prefs.getString("username")!;
   print(userEmial);
 });
 }
@@ -115,7 +119,8 @@ initState(){
       appBar: AppBar(
         title: Text("Products"),
         actions: [
-        userEmial !=null ? Text(userEmial): Text("no"),
+      //  userEmial != null ? Text(userEmial): Text("no"),
+          userName != null ? Text(userName): Text("no"),
           IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
@@ -151,9 +156,9 @@ prefs.remove("email");
                           subtitle:
                               Text(snapshot.data!.docs[index]['description']),
                           leading: CircleAvatar(
-                            child: Image.network(
-                                snapshot.data!.docs[index]['image'],
-                                height: 50),
+                            child: Image.memory(base64Decode(
+                                snapshot.data!.docs[index]['image']),
+                                height: 50,)
                           ),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,

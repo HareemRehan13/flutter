@@ -13,16 +13,18 @@ void main() async {
   );
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+  bool isAdmin = prefs.getBool("isAdmin") ?? false;
 
-  runApp(MyApp(
-    isLoggedIn: isLoggedIn,
-  ));
+
+  runApp(MyApp( isLoggedIn: isLoggedIn, isAdmin: isAdmin));
+ 
 }
 
 class MyApp extends StatelessWidget {
   final bool isLoggedIn;
+  final bool isAdmin;
 
-  const MyApp({super.key, required this.isLoggedIn});
+  const MyApp({super.key, required this.isLoggedIn,required this.isAdmin});
 
   // This widget is the root of your application.
   @override
@@ -49,12 +51,12 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: isLoggedIn ? MyProducts() : Login(),
+        home:  Login(),
         routes: {
           "/signup": (context) => Signup(),
-          "/login": (context) => Login(),
+        
           "/products": (context) => isLoggedIn ? MyProducts()  : Login(),
-          "/add": (context) =>isLoggedIn ? AddProducts() : Login(),
+          "/add": (context) => (isLoggedIn && isAdmin)? AddProducts() : Login(),
         });
   }
 }
