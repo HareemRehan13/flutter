@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crud/addproducts.dart';
 import 'package:firebase_crud/auth.dart';
+import 'package:firebase_crud/fetchproducts.dart';
 import 'package:firebase_crud/firebase_options.dart';
 import 'package:firebase_crud/products.dart';
 import 'package:flutter/material.dart';
@@ -51,10 +52,10 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home:  Login(),
+        home:  ProductApi(),
         routes: {
           "/signup": (context) => Signup(),
-        
+           "/productApi": (context) => ProductApi(),
           "/products": (context) => isLoggedIn ? MyProducts()  : Login(),
           "/add": (context) => (isLoggedIn && isAdmin)? AddProducts() : Login(),
         });
